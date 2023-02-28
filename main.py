@@ -1,4 +1,4 @@
-import pygame, math, random
+import pygame, math, random, time
 
 pygame.mixer.pre_init(44100, -16, 1, 512)
 pygame.mixer.init()
@@ -62,10 +62,10 @@ class CookieObj:
         
         self.animation_state = 0
     def draw(self):
-        if self.animation_state > 0:
-            cookie_img_scaled = pygame.transform.scale(cookie_img, (int(0.9*self.length), int(0.9*self.height)))
+        if self.animation_state + 0.1 > time.time():
+            size_change = (time.time() - self.animation_state) * 2 + 0.8
+            cookie_img_scaled = pygame.transform.scale(cookie_img, (int(size_change * self.length), int(size_change * self.height)))
             window.blit(cookie_img_scaled, (cookie_img_scaled.get_rect(  center=(int(self.x + self.length/2), int(self.y + self.height/2))  )))
-            self.animation_state -= 1
         else:
             window.blit(cookie_img, (cookie_img.get_rect(  center=(int(self.x + self.length/2), int(self.y + self.height/2))  )))
     def collidepoint(self, point):
@@ -494,7 +494,9 @@ while main == True:
             '''Click Cookie'''
             if cookie.collidepoint(mouse_pos):
                 user.score += 1 * user.click_multiplier
-                cookie.animation_state = 1
+
+                
+                cookie.animation_state = time.time()
                 crunch_sound.play()
                 '''Draws new falling cookie'''
                 list_of_clicked_cookies.append( BackgroundCookie(pygame.mouse.get_pos()[0] - 20, pygame.mouse.get_pos()[1] - 20) )
